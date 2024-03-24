@@ -1,0 +1,55 @@
+{
+  "name": "@okeeffed/aws-ddb-migrations",
+  "main": "dist/index.mjs",
+  "version": "0.0.2",
+  "author": "Dennis O'Keeffe",
+  "license": "CC-BY-NC-4.0",
+  "files": [
+    "dist/*.js",
+    "dist/*.d.ts",
+    "dist/*.mjs"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/main.mjs"
+    }
+  },
+  "bin": {
+    "aws-ddb-migrations": "dist/main.mjs"
+  },
+  "scripts": {
+    "dev": "npx tsx src/main.ts",
+    "build": "tsup --format esm --clean --minify",
+    "build:publish": "npm run build && npm publish --access public",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.540.0",
+    "@aws-sdk/lib-dynamodb": "^3.540.0",
+    "@faker-js/faker": "^8.4.1",
+    "@tsconfig/node20": "^20.1.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.30",
+    "@types/prettier": "^2.7.3",
+    "@types/prompts": "^2.4.9",
+    "@types/recursive-readdir": "^2.2.4",
+    "@types/yargs-parser": "^21.0.3",
+    "jest": "29.7.0",
+    "ts-jest": "^29.1.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@commander-js/extra-typings": "^12.0.1",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "find-up": "^7.0.0",
+    "fuse.js": "^7.0.0",
+    "ora": "^8.0.1",
+    "prettier": "^2.8.8",
+    "prompts": "^2.4.2",
+    "recursive-readdir": "^2.2.3",
+    "ts-morph": "^22.0.0",
+    "yargs-parser": "^21.1.1"
+  }
+}
