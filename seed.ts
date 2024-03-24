@@ -4,7 +4,6 @@ import {
   DynamoDBDocumentClient,
 } from "@aws-sdk/lib-dynamodb";
 import { faker } from "@faker-js/faker";
-import { writeFile } from "node:fs/promises";
 
 const client = new DynamoDBClient({
   endpoint: `http://localhost:4566`,
@@ -12,13 +11,12 @@ const client = new DynamoDBClient({
     accessKeyId: "test",
     secretAccessKey: "test",
   },
-  region: "us-east-1",
+  region: "ap-southeast-2",
 });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
 const TABLE_NAME = "ddbm";
-
-const NUM_ITEMS = 1000;
+const NUM_ITEMS = 50;
 
 /**
  * Seed users with random data.
@@ -35,7 +33,6 @@ async function seedData(tableName: string) {
           pk: `SEED#${faker.string.uuid()}`,
           sk: iso,
           description: faker.string.alphanumeric(10),
-          name: faker.string.alphanumeric(10),
         },
       },
     });
@@ -56,7 +53,7 @@ async function seedData(tableName: string) {
 async function main() {
   console.log(`Seeding data for table: ${TABLE_NAME}`);
 
-  console.log("Seeding roles with parties...");
+  console.log("Seeding roles with data...");
   await seedData(TABLE_NAME);
 
   console.log("Seeding completed.");

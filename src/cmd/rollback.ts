@@ -86,7 +86,8 @@ export const rollback = new Command("rollback")
 
     const migrationFilesToRollback = migrationFiles
       .filter((file) => config.migrations[ddbmEnv as string].includes(file))
-      .slice(-steps);
+      .slice(-steps)
+      .reverse();
 
     if (migrationFilesToRollback.length === 0) {
       logger.log("INFO", "No migrations to rollback");

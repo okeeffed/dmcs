@@ -175,3 +175,6 @@ dist
 .DS_Store
 
 tmp
+
+# Ignore Docker created files
+volume
