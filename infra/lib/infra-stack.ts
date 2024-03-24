@@ -6,29 +6,29 @@ export class MyDynamoDBStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const table = new dynamodb.Table(this, "SpikeBatchGetAndQuery", {
-      tableName: "SpikeBatchGetAndQuery",
+    const table = new dynamodb.Table(this, "DDBM", {
+      tableName: "ddbm",
       partitionKey: {
-        name: "composite_id",
+        name: "pk",
         type: dynamodb.AttributeType.STRING,
       },
-      sortKey: { name: "sort_key", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "sk", type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST, // or PROVISIONED
     });
 
     // Adding a Global Secondary Index for searchable first name
-    table.addGlobalSecondaryIndex({
-      indexName: "gsi_2",
-      partitionKey: {
-        name: "gsi_pk_2",
-        type: dynamodb.AttributeType.STRING,
-      },
-      // Uncomment the following if you decide to add a sort key for the GSI
-      sortKey: {
-        name: "gsi_sk_2",
-        type: dynamodb.AttributeType.STRING,
-      },
-    });
+    // table.addGlobalSecondaryIndex({
+    //   indexName: "gsi_2",
+    //   partitionKey: {
+    //     name: "gsi_pk_2",
+    //     type: dynamodb.AttributeType.STRING,
+    //   },
+    //   // Uncomment the following if you decide to add a sort key for the GSI
+    //   sortKey: {
+    //     name: "gsi_sk_2",
+    //     type: dynamodb.AttributeType.STRING,
+    //   },
+    // });
   }
 }
 

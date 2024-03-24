@@ -22,7 +22,9 @@
     "dev": "npx tsx src/main.ts",
     "build": "tsup --format esm --clean --minify",
     "build:publish": "npm run build && npm publish --access public",
-    "test": "jest"
+    "test": "jest",
+    "seed": "tsx seed.ts",
+    "bootstrap": "bin/bootstrap.sh"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.540.0",
@@ -39,6 +41,7 @@
     "jest": "29.7.0",
     "ts-jest": "^29.1.2",
     "tsup": "^8.0.2",
+    "tsx": "^4.7.1",
     "typescript": "^5.4.3"
   },
   "dependencies": {

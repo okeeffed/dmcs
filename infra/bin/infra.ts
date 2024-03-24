@@ -5,7 +5,7 @@ import { MyDynamoDBStack } from "../lib/infra-stack";
 // import { DynamoESStack } from "../lib/dynamo-elasticsearch-stack";
 
 const app = new cdk.App();
-new MyDynamoDBStack(app, "MyDynamoDBStack", {
+new MyDynamoDBStack(app, "DDBMTestStack", {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
@@ -17,6 +17,3 @@ new MyDynamoDBStack(app, "MyDynamoDBStack", {
   // env: { account: '123456789012', region: 'us-east-1' },
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
-
-// TODO: CDC implementation
-// new DynamoESStack(app, "DynamoESStack");
