@@ -1,0 +1,6 @@
+{
+  "migrationsFolder": ".ddbm/migrations",
+	"migrations": {
+		"development": []
+	}
+}

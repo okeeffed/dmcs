@@ -4,8 +4,9 @@ import { existsSync } from "node:fs";
 import prompts from "prompts";
 import ora from "ora";
 import chalk from "chalk";
-import path from "node:path";
 import process from "node:process";
+import { logger } from "@/util/logger";
+import { pathFromCwd } from "@/util/fs";
 
 const getInitConfig = (initEnv: string) => `{
   "migrationsFolder": ".ddbm/migrations",
@@ -33,8 +34,6 @@ export const down = () => {
 	console.log('TODO: up migration');
 }
 `;
-
-const pathFromCwd = (filePath: string) => path.join(process.cwd(), filePath);
 
 export const init = new Command("init")
   .description(
@@ -85,9 +84,6 @@ export const init = new Command("init")
     await writeFile(migrationFilePath, getInitMigration());
 
     spinner.succeed("Initialised DDBM");
-    console.log(chalk.bgGreen(`CREATED`), chalk.green(`.ddbm.config.js`));
-    console.log(
-      chalk.bgGreen(`CREATED`),
-      chalk.green(`.ddbm/migrations/${initMigrationFile}.mjs`)
-    );
+    logger.log("CREATED", ".ddbm.config.js");
+    logger.log("CREATED", `.ddbm/migrations/${initMigrationFile}.mjs`);
   });

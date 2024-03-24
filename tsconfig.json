@@ -8,6 +8,10 @@
     }
   },
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "module": "esnext",
     "resolveJsonModule": true,
     "lib": ["dom", "esnext"],
