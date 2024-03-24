@@ -1,4 +1,4 @@
-import { readdir, writeFile } from "node:fs/promises";
+import { readdir, writeFile, readFile } from "node:fs/promises";
 import path from "node:path";
 
 // Read all files from a directory and return an array of file names in order of Date.now descending
@@ -17,14 +17,14 @@ export const readMigrationFiles = async () => {
 
 // Read DDBM configration file and parse JSON
 export const ddbmReadConfig = async () => {
-  const configPath = pathFromCwd(".ddbm.config.mjs");
-  const config = await import(pathFromCwd(configPath));
-  return config;
+  const configPath = pathFromCwd(".ddbm.config.json");
+  const config = await readFile(configPath, "utf-8");
+  return JSON.parse(config);
 };
 
 // Update the DDBM configuration file
 export const ddbmUpdateConfig = async (config: any) => {
-  const configPath = pathFromCwd(".ddbm.config.mjs");
+  const configPath = pathFromCwd(".ddbm.config.json");
   await writeFile(configPath, JSON.stringify(config, null, 2));
 };
 

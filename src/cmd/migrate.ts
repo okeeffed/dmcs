@@ -20,17 +20,18 @@ export const migrate = new Command("migrate")
     let ddbmEnv: string | undefined = options.env;
 
     if (!ddbmEnv) {
+      const choices = Object.keys(config.migrations).map((env) => ({
+        title: env,
+        value: env,
+      }));
+
       // Ask for initial environment
       const result = await prompts(
         {
           type: "select",
           name: "ddbmEnv",
           message: "Which environment would you like to migrate?",
-          initial: "development",
-          choices: Object.keys(config.migrations).map((env) => ({
-            title: env,
-            value: env,
-          })),
+          choices,
         },
         {
           onCancel: () => {
@@ -52,12 +53,17 @@ export const migrate = new Command("migrate")
       process.exit(1);
     }
 
-    const spinner = ora("Running migrations...").start();
+    logger.log("INFO", `Migrating ${ddbmEnv} environment`);
 
     const migrationFiles = await readMigrationFiles();
     const migrationFilesToApply = migrationFiles.filter(
       (file) => !config.migrations[ddbmEnv as string].includes(file)
     );
+
+    if (migrationFilesToApply.length === 0) {
+      logger.log("INFO", "No migrations to apply");
+      process.exit(0);
+    }
 
     const appliedMigrations: string[] = [];
 
@@ -76,6 +82,4 @@ export const migrate = new Command("migrate")
           config.migrations[ddbmEnv as string].concat(appliedMigrations),
       },
     });
-
-    spinner.succeed("Migrations complete");
   });
