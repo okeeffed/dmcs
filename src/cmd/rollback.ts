@@ -94,15 +94,22 @@ export const rollback = new Command("rollback")
       process.exit(0);
     }
 
-    const appliedMigrations: string[] = [];
-
     for (const file of migrationFilesToRollback) {
       if (options.dryRun) {
         logger.log("PENDING", file);
       } else {
         const migration = await import(pathFromCwd(`.ddbm/migrations/${file}`));
         await migration.down();
-        appliedMigrations.push(file);
+
+        await ddbmUpdateConfig({
+          ...config,
+          migrations: {
+            ...config.migrations,
+            [ddbmEnv as string]: config.migrations[ddbmEnv as string].filter(
+              (migration: string) => migration !== file
+            ),
+          },
+        });
         logger.log("REVERTED", file);
       }
     }
@@ -110,14 +117,4 @@ export const rollback = new Command("rollback")
     if (options.dryRun) {
       process.exit(0);
     }
-
-    await ddbmUpdateConfig({
-      ...config,
-      migrations: {
-        ...config.migrations,
-        [ddbmEnv as string]: config.migrations[ddbmEnv as string].filter(
-          (file: string) => !appliedMigrations.includes(file)
-        ),
-      },
-    });
   });

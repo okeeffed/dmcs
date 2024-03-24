@@ -69,8 +69,6 @@ export const migrate = new Command("migrate")
       process.exit(0);
     }
 
-    const appliedMigrations: string[] = [];
-
     for (const file of migrationFilesToApply) {
       const migration = await import(pathFromCwd(`.ddbm/migrations/${file}`));
 
@@ -78,7 +76,14 @@ export const migrate = new Command("migrate")
         logger.log("PENDING", file);
       } else {
         await migration.up();
-        appliedMigrations.push(file);
+        await ddbmUpdateConfig({
+          ...config,
+          migrations: {
+            ...config.migrations,
+            [ddbmEnv as string]:
+              config.migrations[ddbmEnv as string].concat(file),
+          },
+        });
         logger.log("APPLIED", file);
       }
     }
@@ -86,13 +91,4 @@ export const migrate = new Command("migrate")
     if (options.dryRun) {
       process.exit(0);
     }
-
-    await ddbmUpdateConfig({
-      ...config,
-      migrations: {
-        ...config.migrations,
-        [ddbmEnv as string]:
-          config.migrations[ddbmEnv as string].concat(appliedMigrations),
-      },
-    });
   });
