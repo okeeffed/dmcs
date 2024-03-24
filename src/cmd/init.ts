@@ -18,8 +18,13 @@ export const init = new Command("init")
   .option("-p, --project <name>", "Project name")
   .option("-e, --env <name>", "Name of the environment")
   .option("-f, --force", "Force initialisation")
+  .option(
+    "-c, --config <path>",
+    "Path to the configuration file",
+    ".dmcs.config.json"
+  );
   .action(async (options) => {
-    const configFilePath = pathFromCwd(".dmcs.config.json");
+    const configFilePath = pathFromCwd(options.config);
 
     if (existsSync(configFilePath) && !options.force) {
       logger.error("ERROR", "DMCS already initialised");

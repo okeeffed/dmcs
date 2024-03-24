@@ -15,8 +15,13 @@ export const migrate = new Command("migrate")
   .option("-p, --project <name>", "Project name")
   .option("-e, --env <env>", "Environment to migrate")
   .option("-d, --dry-run", "See the plan for migrations before applying")
+  .option(
+    "-c, --config <path>",
+    "Path to the configuration file",
+    ".dmcs.config.json"
+  )
   .action(async (options) => {
-    const config = await dmcsReadConfig();
+    const config = await dmcsReadConfig(options.config);
     const project = await selectProject(options, config);
     const dmcsEnv = await selectEnv(options, project, config);
 
@@ -45,8 +50,8 @@ export const migrate = new Command("migrate")
         logger.log("PENDING", file);
       } else {
         await migration.up();
-        const latestConfig = await dmcsReadConfig();
-        await dmcsUpdateConfig({
+        const latestConfig = await dmcsReadConfig(options.config);
+        await dmcsUpdateConfig(options.config, {
           ...latestConfig,
           [project]: {
             ...latestConfig[project],

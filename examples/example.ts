@@ -1,5 +1,3 @@
-function mockExample() {
-  return {
-    a: true,
-  };
-}
+const mockExample = () => ({
+  a: true,
+});

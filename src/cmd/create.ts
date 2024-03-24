@@ -13,8 +13,13 @@ export const create = new Command("create")
   .description("Create a new migration file")
   .option("-p, --project <name>", "Project name")
   .option("-n, --name <name>", "Name of the migration")
+  .option(
+    "-c, --config <path>",
+    "Path to the configuration file",
+    ".dmcs.config.json"
+  )
   .action(async (options) => {
-    const config = await dmcsReadConfig();
+    const config = await dmcsReadConfig(options.config);
     const project = await selectProject(options, config);
     const migrationName = await setMigrationName(options);
     const projectMigrationsFolder = `.dmcs/${project}/migrations`;

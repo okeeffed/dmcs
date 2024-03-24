@@ -16,15 +16,15 @@ export const readMigrationFiles = async (project: string) => {
 };
 
 // Read DMCS configration file and parse JSON
-export const dmcsReadConfig = async () => {
-  const configPath = pathFromCwd(".dmcs.config.json");
+export const dmcsReadConfig = async (configFilePath: string) => {
+  const configPath = pathFromCwd(configFilePath);
   const config = await readFile(configPath, "utf-8");
   return JSON.parse(config);
 };
 
 // Update the DMCS configuration file
-export const dmcsUpdateConfig = async (config: any) => {
-  const configPath = pathFromCwd(".dmcs.config.json");
+export const dmcsUpdateConfig = async (configFilePath: string, config: any) => {
+  const configPath = pathFromCwd(configFilePath);
   await writeFile(configPath, JSON.stringify(config, null, 2));
 };
 

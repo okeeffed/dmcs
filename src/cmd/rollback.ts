@@ -18,8 +18,13 @@ export const rollback = new Command("rollback")
   .option("-e, --env <env>", "Environment to migrate")
   .option("-n, --num <num>", "Number of migrations to rollback")
   .option("-d, --dry-run", "See the plan for migrations before rolling back")
+  .option(
+    "-c, --config <path>",
+    "Path to the configuration file",
+    ".dmcs.config.json"
+  )
   .action(async (options) => {
-    const config = await dmcsReadConfig();
+    const config = await dmcsReadConfig(options.config);
     const project = await selectProject(options, config);
     let dmcsEnv: string | undefined = options.env;
 
@@ -108,8 +113,8 @@ export const rollback = new Command("rollback")
         );
         await migration.down();
 
-        const latestConfig = await dmcsReadConfig();
-        await dmcsUpdateConfig({
+        const latestConfig = await dmcsReadConfig(options.config);
+        await dmcsUpdateConfig(options.config, {
           ...latestConfig,
           [project]: {
             ...latestConfig[project],

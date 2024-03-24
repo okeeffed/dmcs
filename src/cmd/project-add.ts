@@ -14,8 +14,13 @@ export const projectAdd = new Command("project-add")
   .option("-p, --project <name>", "Project name")
   .option("-e, --env <name>", "Name of the environment")
   .option("-f, --force", "Force initialisation")
+  .option(
+    "-c, --config <path>",
+    "Path to the configuration file",
+    ".dmcs.config.json"
+  )
   .action(async (options) => {
-    const config = await dmcsReadConfig();
+    const config = await dmcsReadConfig(options.config);
     const project = await setInitialProjectName(options);
     const initialEnv = await setInitialEnvironmentName(options);
 
@@ -31,7 +36,7 @@ export const projectAdd = new Command("project-add")
       await mkdir(`.dmcs/${project}/migrations`, { recursive: true });
     }
 
-    await dmcsUpdateConfig({
+    await dmcsUpdateConfig(options.config, {
       ...config,
       [project]: {
         migrationsFolder: `.dmcs/${project}/migrations`,
