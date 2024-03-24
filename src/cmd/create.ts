@@ -6,46 +6,15 @@ import ora from "ora";
 import chalk from "chalk";
 import process from "node:process";
 import { logger } from "@/util/logger";
-import { ddbmReadConfig, pathFromCwd } from "@/util/fs";
+import { pathFromCwd } from "@/util/fs";
 import snakeCase from "lodash.snakecase";
+import { getInitMigration } from "@/util/constants";
 
 export const create = new Command("create")
   .description("Create a new migration file")
   .option("-n, --name <name>", "Name of the migration")
-  .option("-e, --env <env>", "Environment to create migration for")
   .action(async (options) => {
-    const config = await ddbmReadConfig();
-    let ddbmEnv: string | undefined = options.env;
     let migrationName: string | undefined = options.name;
-
-    if (!ddbmEnv) {
-      const choices = Object.keys(config.migrations).map((env) => ({
-        title: env,
-        value: env,
-      }));
-
-      // Ask for initial environment
-      const result = await prompts(
-        {
-          type: "select",
-          name: "ddbmEnv",
-          message: "Which environment would you like to migrate?",
-          choices,
-        },
-        {
-          onCancel: () => {
-            console.log(chalk.yellow("User cancelled"));
-            process.exit(0);
-          },
-        }
-      );
-      ddbmEnv = result.ddbmEnv;
-
-      if (!ddbmEnv) {
-        console.log(chalk.red("No environment selected"));
-        process.exit(1);
-      }
-    }
 
     if (!migrationName) {
       // Ask for initial environment
@@ -53,7 +22,7 @@ export const create = new Command("create")
         {
           type: "text",
           name: "migrationName",
-          message: "Which environment would you like to migrate?",
+          message: "Name of the migration (e.g. add_updated_at_data_to_role)?",
         },
         {
           onCancel: () => {
@@ -84,11 +53,13 @@ export const create = new Command("create")
 
     const migrationFilePath = `.ddbm/migrations/${Date.now()}_${snakeCase(
       migrationName
-    )}`;
+    )}.mjs`;
 
-    await writeFile(pathFromCwd(migrationFilePath), getInitMigration());
+    await writeFile(
+      pathFromCwd(migrationFilePath),
+      getInitMigration(migrationName)
+    );
 
-    spinner.succeed("Initialised DDBM");
-    logger.log("CREATED", ".ddbm.config.js");
+    spinner.succeed("Created new migration file");
     logger.log("CREATED", migrationFilePath);
   });

@@ -50,14 +50,10 @@ export const init = new Command("init")
       await mkdir(migrationsFolderPath);
     }
 
-    const initMigrationFile = `${Date.now()}_init`;
-    const migrationFilePath = pathFromCwd(
-      `.ddbm/migrations/${initMigrationFile}.mjs`
-    );
-
-    await writeFile(migrationFilePath, getInitMigration());
+    const migrationFilePath = `.ddbm/migrations/${Date.now()}_init.mjs`;
+    await writeFile(pathFromCwd(migrationFilePath), getInitMigration("init"));
 
     spinner.succeed("Initialised DDBM");
     logger.log("CREATED", ".ddbm.config.js");
-    logger.log("CREATED", `.ddbm/migrations/${initMigrationFile}.mjs`);
+    logger.log("CREATED", migrationFilePath);
   });

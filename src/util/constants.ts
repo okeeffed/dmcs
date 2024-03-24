@@ -1,4 +1,4 @@
-const getInitConfig = (initEnv: string) => `{
+export const getInitConfig = (initEnv: string) => `{
   "migrationsFolder": ".ddbm/migrations",
 	"migrations": {
 		"${initEnv}": []
@@ -6,8 +6,9 @@ const getInitConfig = (initEnv: string) => `{
 }
 `;
 
-const getInitMigration =
-  () => `import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
+export const getInitMigration = (
+  fileName: string
+) => `import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 // Initialize DynamoDB client
@@ -16,11 +17,11 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 export const up = () => {
 	// Your migration code here
-	console.log('TODO: up migration');
+	console.log('TODO: ${fileName} up migration');
 }
 
 export const down = () => {
 	// Your migration code here
-	console.log('TODO: down migration');
+	console.log('TODO: ${fileName} down migration');
 }
 `;
