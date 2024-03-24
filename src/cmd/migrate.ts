@@ -9,6 +9,7 @@ import process from "node:process";
 
 import { logger } from "@/util/logger";
 import { selectEnv, selectProject } from "@/util/prompts";
+import { CONFIG_DEFAULT_PATH } from "@/util/constants";
 
 export const migrate = new Command("migrate")
   .description("Run migrations for an environment")
@@ -18,7 +19,7 @@ export const migrate = new Command("migrate")
   .option(
     "-c, --config <path>",
     "Path to the configuration file",
-    ".dmcs.config.json"
+    CONFIG_DEFAULT_PATH
   )
   .action(async (options) => {
     const config = await dmcsReadConfig(options.config);

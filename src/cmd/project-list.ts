@@ -1,12 +1,13 @@
 import { Command } from "@commander-js/extra-typings";
 import { dmcsReadConfig } from "@/util/fs";
 import { logger } from "@/util/logger";
+import { CONFIG_DEFAULT_PATH } from "@/util/constants";
 
 export const projectList = new Command("project-list")
   .option(
     "-c, --config <path>",
     "Path to the configuration file",
-    ".dmcs.config.json"
+    CONFIG_DEFAULT_PATH
   )
   .description("List all projects in the configuration")
   .action(async (options) => {

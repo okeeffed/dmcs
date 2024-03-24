@@ -3,6 +3,7 @@ import { dmcsUpdateConfig, dmcsReadConfig } from "@/util/fs";
 
 import { logger } from "@/util/logger";
 import { selectProject, setNewEnvName } from "@/util/prompts";
+import { CONFIG_DEFAULT_PATH } from "@/util/constants";
 
 export const envAdd = new Command("env-add")
   .description("Add a new environment to the configuration")
@@ -11,7 +12,7 @@ export const envAdd = new Command("env-add")
   .option(
     "-c, --config <path>",
     "Path to the configuration file",
-    ".dmcs.config.json"
+    CONFIG_DEFAULT_PATH
   )
   .action(async (options) => {
     const config = await dmcsReadConfig(options.config);

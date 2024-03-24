@@ -2,6 +2,7 @@ import { Command } from "@commander-js/extra-typings";
 import { dmcsReadConfig } from "@/util/fs";
 import { logger } from "@/util/logger";
 import { selectProject } from "@/util/prompts";
+import { CONFIG_DEFAULT_PATH } from "@/util/constants";
 
 export const envList = new Command("env-list")
   .description("List all environments in the configuration")
@@ -9,7 +10,7 @@ export const envList = new Command("env-list")
   .option(
     "-c, --config <path>",
     "Path to the configuration file",
-    ".dmcs.config.json"
+    CONFIG_DEFAULT_PATH
   )
   .action(async (options) => {
     const config = await dmcsReadConfig(options.config);

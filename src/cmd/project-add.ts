@@ -8,6 +8,7 @@ import {
 } from "@/util/prompts";
 import { existsSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
+import { CONFIG_DEFAULT_PATH } from "@/util/constants";
 
 export const projectAdd = new Command("project-add")
   .description("Add a new project to the configuration")
@@ -17,7 +18,7 @@ export const projectAdd = new Command("project-add")
   .option(
     "-c, --config <path>",
     "Path to the configuration file",
-    ".dmcs.config.json"
+    CONFIG_DEFAULT_PATH
   )
   .action(async (options) => {
     const config = await dmcsReadConfig(options.config);

@@ -5,7 +5,11 @@ import ora from "ora";
 import process from "node:process";
 import { logger } from "@/util/logger";
 import { pathFromCwd } from "@/util/fs";
-import { getInitConfig, getInitMigration } from "@/util/constants";
+import {
+  CONFIG_DEFAULT_PATH,
+  getInitConfig,
+  getInitMigration,
+} from "@/util/constants";
 import {
   setInitialEnvironmentName,
   setInitialProjectName,
@@ -21,8 +25,8 @@ export const init = new Command("init")
   .option(
     "-c, --config <path>",
     "Path to the configuration file",
-    ".dmcs.config.json"
-  );
+    CONFIG_DEFAULT_PATH
+  )
   .action(async (options) => {
     const configFilePath = pathFromCwd(options.config);
 

@@ -1,3 +1,5 @@
+export const CONFIG_DEFAULT_PATH = ".dmcs.config.json";
+
 export const getInitConfig = (projectName: string, initEnv: string) => `{
 	"${projectName}": {
 		"migrationsFolder": ".dmcs/${projectName}/migrations",

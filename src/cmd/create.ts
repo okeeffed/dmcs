@@ -6,7 +6,7 @@ import process from "node:process";
 import { logger } from "@/util/logger";
 import { dmcsReadConfig, pathFromCwd } from "@/util/fs";
 import snakeCase from "lodash.snakecase";
-import { getInitMigration } from "@/util/constants";
+import { CONFIG_DEFAULT_PATH, getInitMigration } from "@/util/constants";
 import { selectProject, setMigrationName } from "@/util/prompts";
 
 export const create = new Command("create")
@@ -16,7 +16,7 @@ export const create = new Command("create")
   .option(
     "-c, --config <path>",
     "Path to the configuration file",
-    ".dmcs.config.json"
+    CONFIG_DEFAULT_PATH
   )
   .action(async (options) => {
     const config = await dmcsReadConfig(options.config);
