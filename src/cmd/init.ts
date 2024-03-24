@@ -42,6 +42,22 @@ export const init = new Command("init")
     "Initialise the AWS DDB migrations folder and configuration file"
   )
   .action(async () => {
+    // Ask for initial environment
+    const { initEnv } = await prompts(
+      {
+        type: "text",
+        name: "initEnv",
+        message: "Enter the initial environment name",
+        initial: "development",
+      },
+      {
+        onCancel: () => {
+          console.log(chalk.yellow("User cancelled"));
+          process.exit(0);
+        },
+      }
+    );
+
     const spinner = ora("Initialising DDBM...").start();
 
     // Create initial migrations folder
@@ -49,15 +65,7 @@ export const init = new Command("init")
       await mkdir(".ddbm");
     }
 
-    // Ask for initial environment
-    const { initEnv } = await prompts({
-      type: "text",
-      name: "initEnv",
-      message: "Enter the initial environment name",
-      initial: "development",
-    });
-
-    const configFilePath = pathFromCwd(".ddbm/.ddbm.config.mjs");
+    const configFilePath = pathFromCwd(".ddbm.config.mjs");
     const migrationsFolderPath = pathFromCwd(".ddbm/migrations");
 
     // Create initial configuration file
@@ -78,6 +86,9 @@ export const init = new Command("init")
     await writeFile(migrationFilePath, getInitMigration());
 
     spinner.succeed("Initialised DDBM");
-    console.log(chalk.green(`CREATED .ddbm.config.js`));
-    console.log(chalk.green(`CREATED .ddbm/migrations/${migrationFilePath}`));
+    console.log(chalk.bgGreen(`[CREATED] `), chalk.green(`.ddbm.config.js`));
+    console.log(
+      chalk.bgGreen(`[CREATED] `),
+      chalk.green(`.ddbm/migrations/${migrationFilePath}`)
+    );
   });
