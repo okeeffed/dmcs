@@ -5,10 +5,11 @@ import { rollback } from "@/cmd/rollback";
 import { create } from "@/cmd/create";
 import { envList } from "@/cmd/env-list";
 import { envAdd } from "@/cmd/env-add";
-import packageJson from "../package.json";
 
 async function main() {
-  program.version(packageJson.version).description(packageJson.description);
+  program
+    .version("0.0.4")
+    .description("A simple CLI tool to manage DynamoDB data migrations");
 
   program.addCommand(init);
   program.addCommand(migrate);

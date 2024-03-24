@@ -1,8 +1,8 @@
 {
   "name": "@okeeffed/aws-ddb-migrations",
   "description": "A simple CLI tool to manage DynamoDB data migrations",
-  "main": "dist/index.mjs",
-  "version": "0.0.1",
+  "main": "dist/main.mjs",
+  "version": "0.0.4",
   "author": "Dennis O'Keeffe",
   "license": "CC-BY-NC-4.0",
   "files": [
