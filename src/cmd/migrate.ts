@@ -76,14 +76,16 @@ export const migrate = new Command("migrate")
         logger.log("PENDING", file);
       } else {
         await migration.up();
+        const latestConfig = await ddbmReadConfig();
         await ddbmUpdateConfig({
-          ...config,
+          ...latestConfig,
           migrations: {
-            ...config.migrations,
+            ...latestConfig.migrations,
             [ddbmEnv as string]:
-              config.migrations[ddbmEnv as string].concat(file),
+              latestConfig.migrations[ddbmEnv as string].concat(file),
           },
         });
+        // Update
         logger.log("APPLIED", file);
       }
     }

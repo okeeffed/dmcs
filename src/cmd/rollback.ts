@@ -101,13 +101,14 @@ export const rollback = new Command("rollback")
         const migration = await import(pathFromCwd(`.ddbm/migrations/${file}`));
         await migration.down();
 
+        const latestConfig = await ddbmReadConfig();
         await ddbmUpdateConfig({
-          ...config,
+          ...latestConfig,
           migrations: {
-            ...config.migrations,
-            [ddbmEnv as string]: config.migrations[ddbmEnv as string].filter(
-              (migration: string) => migration !== file
-            ),
+            ...latestConfig.migrations,
+            [ddbmEnv as string]: latestConfig.migrations[
+              ddbmEnv as string
+            ].filter((migration: string) => migration !== file),
           },
         });
         logger.log("REVERTED", file);
