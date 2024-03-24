@@ -31,7 +31,7 @@ export const up = () => {
 
 export const down = () => {
 	// Your migration code here
-	console.log('TODO: up migration');
+	console.log('TODO: down migration');
 }
 `;
 
