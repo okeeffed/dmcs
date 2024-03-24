@@ -1,6 +1,6 @@
 {
-  "name": "@okeeffed/aws-ddb-migrations",
-  "description": "A simple CLI tool to manage DynamoDB data migrations",
+  "name": "@okeeffed/dmcs",
+  "description": "A simple CLI tool to manage data migrations",
   "main": "dist/main.mjs",
   "version": "0.0.11",
   "author": "Dennis O'Keeffe",
