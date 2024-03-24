@@ -7,33 +7,7 @@ import chalk from "chalk";
 import process from "node:process";
 import { logger } from "@/util/logger";
 import { pathFromCwd } from "@/util/fs";
-
-const getInitConfig = (initEnv: string) => `{
-  "migrationsFolder": ".ddbm/migrations",
-	"migrations": {
-		"${initEnv}": []
-	}
-}
-`;
-
-const getInitMigration =
-  () => `import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-
-// Initialize DynamoDB client
-const client = new DynamoDBClient();
-const docClient = DynamoDBDocumentClient.from(client);
-
-export const up = () => {
-	// Your migration code here
-	console.log('TODO: up migration');
-}
-
-export const down = () => {
-	// Your migration code here
-	console.log('TODO: down migration');
-}
-`;
+import { getInitConfig, getInitMigration } from "@/util/constants";
 
 export const init = new Command("init")
   .description(

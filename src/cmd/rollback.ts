@@ -15,6 +15,7 @@ export const rollback = new Command("rollback")
   .description("Run migrations for an environment")
   .option("-e, --env <env>", "Environment to migrate")
   .option("-n, --num <num>", "Number of migrations to rollback")
+  .option("-d, --dry-run", "See the plan for migrations before rolling back")
   .action(async (options) => {
     const config = await ddbmReadConfig();
     let ddbmEnv: string | undefined = options.env;
@@ -56,21 +57,57 @@ export const rollback = new Command("rollback")
       process.exit(1);
     }
 
-    logger.log("INFO", `Migrating ${ddbmEnv} environment`);
+    if (options.dryRun) {
+      logger.log(
+        "INFO",
+        `Dry run plan for rolling back ${ddbmEnv} environment up to ${steps} step(s)`
+      );
+    } else {
+      logger.log(
+        "INFO",
+        `Rolling back ${ddbmEnv} environment up to ${steps} step(s)`
+      );
+    }
 
     const migrationFiles = await readMigrationFiles();
+
+    if (migrationFiles.length === 0) {
+      logger.log("INFO", "No migrations to rollback");
+      process.exit(0);
+    }
+
+    if (migrationFiles.length < steps) {
+      logger.error(
+        "ERROR",
+        `Cannot rollback ${steps} step(s) as there are only ${migrationFiles.length} migrations`
+      );
+      process.exit(1);
+    }
 
     const migrationFilesToRollback = migrationFiles
       .filter((file) => config.migrations[ddbmEnv as string].includes(file))
       .slice(-steps);
 
+    if (migrationFilesToRollback.length === 0) {
+      logger.log("INFO", "No migrations to rollback");
+      process.exit(0);
+    }
+
     const appliedMigrations: string[] = [];
 
     for (const file of migrationFilesToRollback) {
-      const migration = await import(pathFromCwd(`.ddbm/migrations/${file}`));
-      await migration.down();
-      appliedMigrations.push(file);
-      logger.log("REVERTED", file);
+      if (options.dryRun) {
+        logger.log("PENDING", file);
+      } else {
+        const migration = await import(pathFromCwd(`.ddbm/migrations/${file}`));
+        await migration.down();
+        appliedMigrations.push(file);
+        logger.log("REVERTED", file);
+      }
+    }
+
+    if (options.dryRun) {
+      process.exit(0);
     }
 
     await ddbmUpdateConfig({

@@ -20,6 +20,9 @@ dependencies:
   fuse.js:
     specifier: ^7.0.0
     version: 7.0.0
+  lodash.snakecase:
+    specifier: ^4.1.1
+    version: 4.1.1
   ora:
     specifier: ^8.0.1
     version: 8.0.1
@@ -55,6 +58,9 @@ devDependencies:
   '@types/jest':
     specifier: ^29.5.12
     version: 29.5.12
+  '@types/lodash.snakecase':
+    specifier: ^4.1.9
+    version: 4.1.9
   '@types/node':
     specifier: ^20.11.30
     version: 20.11.30
@@ -2046,6 +2052,16 @@ packages:
       pretty-format: 29.7.0
     dev: true
 
+  /@types/lodash.snakecase@4.1.9:
+    resolution: {integrity: sha512-emBZJUiNlo+QPXr1junMKXwzHJK9zbFvTVdyAoorFcm1YRsbzkZCYPTVMM9AW+dlnA6utG7vpfvOs8alxv/TMw==}
+    dependencies:
+      '@types/lodash': 4.17.0
+    dev: true
+
+  /@types/lodash@4.17.0:
+    resolution: {integrity: sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==}
+    dev: true
+
   /@types/node@20.11.30:
     resolution: {integrity: sha512-dHM6ZxwlmuZaRmUPfv1p+KrdD1Dci04FbdEm/9wEMouFqxYoFl5aMkt0VMAUtYRQDyYvD41WJLukhq/ha3YuTw==}
     dependencies:
@@ -3448,6 +3464,10 @@ packages:
   /lodash.memoize@4.1.2:
     resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
     dev: true
+
+  /lodash.snakecase@4.1.1:
+    resolution: {integrity: sha512-QZ1d4xoBHYUeuouhEq3lk3Uq7ldgyFXGBhg04+oRLnIz8o9T65Eh+8YdroUwn846zchkA9yDsDl5CVVaV2nqYw==}
+    dev: false
 
   /lodash.sortby@4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}

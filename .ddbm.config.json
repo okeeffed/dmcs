@@ -1,6 +1,8 @@
 {
   "migrationsFolder": ".ddbm/migrations",
   "migrations": {
-    "development": []
+    "development": [
+      "1711245114392_init.mjs"
+    ]
   }
 }

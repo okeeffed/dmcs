@@ -1,6 +1,5 @@
 import { Command } from "@commander-js/extra-typings";
 import prompts from "prompts";
-import ora from "ora";
 import chalk from "chalk";
 import {
   ddbmUpdateConfig,
@@ -15,6 +14,7 @@ import { logger } from "@/util/logger";
 export const migrate = new Command("migrate")
   .description("Run migrations for an environment")
   .option("-e, --env <env>", "Environment to migrate")
+  .option("-d, --dry-run", "See the plan for migrations before applying")
   .action(async (options) => {
     const config = await ddbmReadConfig();
     let ddbmEnv: string | undefined = options.env;
@@ -53,7 +53,11 @@ export const migrate = new Command("migrate")
       process.exit(1);
     }
 
-    logger.log("INFO", `Migrating ${ddbmEnv} environment`);
+    if (options.dryRun) {
+      logger.log("INFO", `Dry run plan for migrating ${ddbmEnv} environment`);
+    } else {
+      logger.log("INFO", `Migrating ${ddbmEnv} environment`);
+    }
 
     const migrationFiles = await readMigrationFiles();
     const migrationFilesToApply = migrationFiles.filter(
@@ -69,9 +73,18 @@ export const migrate = new Command("migrate")
 
     for (const file of migrationFilesToApply) {
       const migration = await import(pathFromCwd(`.ddbm/migrations/${file}`));
-      await migration.up();
-      appliedMigrations.push(file);
-      logger.log("APPLIED", file);
+
+      if (options.dryRun) {
+        logger.log("PENDING", file);
+      } else {
+        await migration.up();
+        appliedMigrations.push(file);
+        logger.log("APPLIED", file);
+      }
+    }
+
+    if (options.dryRun) {
+      process.exit(0);
     }
 
     await ddbmUpdateConfig({
