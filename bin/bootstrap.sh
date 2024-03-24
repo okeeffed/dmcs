@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 AWS_ACCESS_KEY_ID='test'
 AWS_SECRET_KEY='test'
 AWS_REGION='us-east-1'
