@@ -7,12 +7,11 @@ import chalk from "chalk";
 import path from "node:path";
 import process from "node:process";
 
-const getInitConfig = (initEnv: string) => `export default {
-	migrationsFolder: ".ddbm/migrations",
-	configFolder: ".ddbm",
-	environments: [
-		'${initEnv}'
-	]
+const getInitConfig = (initEnv: string) => `{
+  "migrationsFolder": ".ddbm/migrations",
+	"migrations": {
+		"${initEnv}": []
+	}
 }
 `;
 
@@ -65,7 +64,7 @@ export const init = new Command("init")
       await mkdir(".ddbm");
     }
 
-    const configFilePath = pathFromCwd(".ddbm.config.mjs");
+    const configFilePath = pathFromCwd(".ddbm.config.json");
     const migrationsFolderPath = pathFromCwd(".ddbm/migrations");
 
     // Create initial configuration file
@@ -86,9 +85,9 @@ export const init = new Command("init")
     await writeFile(migrationFilePath, getInitMigration());
 
     spinner.succeed("Initialised DDBM");
-    console.log(chalk.bgGreen(`[CREATED] `), chalk.green(`.ddbm.config.js`));
+    console.log(chalk.bgGreen(`CREATED`), chalk.green(`.ddbm.config.js`));
     console.log(
-      chalk.bgGreen(`[CREATED] `),
-      chalk.green(`.ddbm/migrations/${migrationFilePath}`)
+      chalk.bgGreen(`CREATED`),
+      chalk.green(`.ddbm/migrations/${initMigrationFile}.mjs`)
     );
   });
