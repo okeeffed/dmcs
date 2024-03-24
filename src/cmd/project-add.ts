@@ -2,26 +2,32 @@ import { Command } from "@commander-js/extra-typings";
 import { dmcsUpdateConfig, dmcsReadConfig } from "@/util/fs";
 
 import { logger } from "@/util/logger";
-import { selectProject, setNewEnvName } from "@/util/prompts";
+import {
+  setInitialEnvironmentName,
+  setInitialProjectName,
+} from "@/util/prompts";
 
-export const envAdd = new Command("env-add")
-  .description("Add a new environment to the configuration")
+export const projectAdd = new Command("project-add")
+  .description("Add a new project to the configuration")
   .option("-p, --project <name>", "Project name")
   .option("-e, --env <name>", "Name of the environment")
   .action(async (options) => {
     const config = await dmcsReadConfig();
-    const project = await selectProject(options, config);
-    const env = await setNewEnvName(options, project, config);
+    const project = await setInitialProjectName(options);
+    const initialEnv = await setInitialEnvironmentName(options);
 
     await dmcsUpdateConfig({
       ...config,
       [project]: {
         migrations: {
           ...config.migrations,
-          [env]: [],
+          [initialEnv]: [],
         },
       },
     });
 
-    logger.log("INFO", `Added environment ${env}`);
+    logger.log(
+      "INFO",
+      `Added project ${project} with initial environment ${initialEnv}`
+    );
   });

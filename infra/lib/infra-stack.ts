@@ -6,8 +6,8 @@ export class MyDynamoDBStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const table = new dynamodb.Table(this, "DDBM", {
-      tableName: "ddbm",
+    const table = new dynamodb.Table(this, "DMCS", {
+      tableName: "dmcs",
       partitionKey: {
         name: "pk",
         type: dynamodb.AttributeType.STRING,

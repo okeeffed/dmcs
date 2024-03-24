@@ -1,5 +1,5 @@
 export const getInitConfig = (initEnv: string) => `{
-  "migrationsFolder": ".ddbm/migrations",
+  "migrationsFolder": ".dmcs/migrations",
 	"migrations": {
 		"${initEnv}": []
 	}

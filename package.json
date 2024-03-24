@@ -17,7 +17,7 @@
   },
   "bin": {
     "aws-ddb-migrations": "dist/main.mjs",
-    "ddbm": "dist/main.mjs"
+    "dmcs": "dist/main.mjs"
   },
   "scripts": {
     "dev": "npx tsx src/main.ts",

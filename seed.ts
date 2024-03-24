@@ -15,7 +15,7 @@ const client = new DynamoDBClient({
 });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-const TABLE_NAME = "ddbm";
+const TABLE_NAME = "dmcs";
 const NUM_ITEMS = 50;
 
 /**

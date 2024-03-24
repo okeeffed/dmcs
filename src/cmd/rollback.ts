@@ -2,28 +2,31 @@ import { Command } from "@commander-js/extra-typings";
 import prompts from "prompts";
 import chalk from "chalk";
 import {
-  ddbmUpdateConfig,
+  dmcsUpdateConfig,
   pathFromCwd,
   readMigrationFiles,
-  ddbmReadConfig,
+  dmcsReadConfig,
 } from "@/util/fs";
 import process from "node:process";
 
 import { logger } from "@/util/logger";
+import { selectProject } from "@/util/prompts";
 
 export const rollback = new Command("rollback")
   .description("Run migrations for an environment")
+  .option("-p, --project <name>", "Project name")
   .option("-e, --env <env>", "Environment to migrate")
   .option("-n, --num <num>", "Number of migrations to rollback")
   .option("-d, --dry-run", "See the plan for migrations before rolling back")
   .action(async (options) => {
-    const config = await ddbmReadConfig();
-    let ddbmEnv: string | undefined = options.env;
+    const config = await dmcsReadConfig();
+    const project = await selectProject(options, config);
+    let dmcsEnv: string | undefined = options.env;
 
     // Number of steps to rollback
     const steps = options.num ? parseInt(options.num) : 1;
 
-    if (!ddbmEnv) {
+    if (!dmcsEnv) {
       const choices = Object.keys(config.migrations).map((env) => ({
         title: env,
         value: env,
@@ -33,7 +36,7 @@ export const rollback = new Command("rollback")
       const result = await prompts(
         {
           type: "select",
-          name: "ddbmEnv",
+          name: "dmcsEnv",
           message: "Which environment would you like to rollback?",
           choices,
         },
@@ -44,28 +47,28 @@ export const rollback = new Command("rollback")
           },
         }
       );
-      ddbmEnv = result.ddbmEnv;
+      dmcsEnv = result.dmcsEnv;
 
-      if (!ddbmEnv) {
+      if (!dmcsEnv) {
         console.log(chalk.red("No environment selected"));
         process.exit(1);
       }
     }
 
-    if (!config.migrations[ddbmEnv]) {
-      console.log(chalk.red(`No migrations found for ${ddbmEnv}`));
+    if (!config.migrations[dmcsEnv]) {
+      console.log(chalk.red(`No migrations found for ${dmcsEnv}`));
       process.exit(1);
     }
 
     if (options.dryRun) {
       logger.log(
         "INFO",
-        `Dry run plan for rolling back ${ddbmEnv} environment up to ${steps} step(s)`
+        `Dry run plan for rolling back ${dmcsEnv} environment up to ${steps} step(s)`
       );
     } else {
       logger.log(
         "INFO",
-        `Rolling back ${ddbmEnv} environment up to ${steps} step(s)`
+        `Rolling back ${dmcsEnv} environment up to ${steps} step(s)`
       );
     }
 
@@ -85,7 +88,9 @@ export const rollback = new Command("rollback")
     }
 
     const migrationFilesToRollback = migrationFiles
-      .filter((file) => config.migrations[ddbmEnv as string].includes(file))
+      .filter((file) =>
+        config[project].migrations[dmcsEnv as string].includes(file)
+      )
       .slice(-steps)
       .reverse();
 
@@ -98,17 +103,21 @@ export const rollback = new Command("rollback")
       if (options.dryRun) {
         logger.log("PENDING", file);
       } else {
-        const migration = await import(pathFromCwd(`.ddbm/migrations/${file}`));
+        const migration = await import(
+          pathFromCwd(`.dmcs/${project}/migrations/${file}`)
+        );
         await migration.down();
 
-        const latestConfig = await ddbmReadConfig();
-        await ddbmUpdateConfig({
+        const latestConfig = await dmcsReadConfig();
+        await dmcsUpdateConfig({
           ...latestConfig,
-          migrations: {
-            ...latestConfig.migrations,
-            [ddbmEnv as string]: latestConfig.migrations[
-              ddbmEnv as string
-            ].filter((migration: string) => migration !== file),
+          [project]: {
+            migrations: {
+              ...latestConfig.migrations,
+              [dmcsEnv as string]: latestConfig.migrations[
+                dmcsEnv as string
+              ].filter((migration: string) => migration !== file),
+            },
           },
         });
         logger.log("REVERTED", file);

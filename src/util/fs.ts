@@ -10,21 +10,21 @@ export const readFilesFromDirDesc = async (dirPath: string) => {
 };
 
 export const readMigrationFiles = async () => {
-  const migrationsDir = pathFromCwd(".ddbm/migrations");
+  const migrationsDir = pathFromCwd(".dmcs/migrations");
   const files = await readFilesFromDirDesc(migrationsDir);
   return files.filter((file) => file.endsWith(".mjs"));
 };
 
-// Read DDBM configration file and parse JSON
-export const ddbmReadConfig = async () => {
-  const configPath = pathFromCwd(".ddbm.config.json");
+// Read DMCS configration file and parse JSON
+export const dmcsReadConfig = async () => {
+  const configPath = pathFromCwd(".dmcs.config.json");
   const config = await readFile(configPath, "utf-8");
   return JSON.parse(config);
 };
 
-// Update the DDBM configuration file
-export const ddbmUpdateConfig = async (config: any) => {
-  const configPath = pathFromCwd(".ddbm.config.json");
+// Update the DMCS configuration file
+export const dmcsUpdateConfig = async (config: any) => {
+  const configPath = pathFromCwd(".dmcs.config.json");
   await writeFile(configPath, JSON.stringify(config, null, 2));
 };
 

@@ -1,0 +1,10 @@
+{
+  "dynamo": {
+    "migrationsFolder": ".dmcs/migrations",
+    "migrations": {
+      "development": ["1711245114392_init.mjs"],
+      "stage": [],
+      "sandbox": []
+    }
+  }
+}

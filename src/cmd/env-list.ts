@@ -1,11 +1,11 @@
 import { Command } from "@commander-js/extra-typings";
-import { ddbmReadConfig } from "@/util/fs";
+import { dmcsReadConfig } from "@/util/fs";
 import { logger } from "@/util/logger";
 
 export const envList = new Command("env-list")
   .description("List all environments in the configuration")
   .action(async () => {
-    const config = await ddbmReadConfig();
+    const config = await dmcsReadConfig();
     const existingEnvs = Object.keys(config.migrations);
 
     if (existingEnvs.length === 0) {
