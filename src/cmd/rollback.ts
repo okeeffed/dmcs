@@ -27,7 +27,7 @@ export const rollback = new Command("rollback")
     const steps = options.num ? parseInt(options.num) : 1;
 
     if (!dmcsEnv) {
-      const choices = Object.keys(config.migrations).map((env) => ({
+      const choices = Object.keys(config[project].migrations).map((env) => ({
         title: env,
         value: env,
       }));
@@ -55,7 +55,7 @@ export const rollback = new Command("rollback")
       }
     }
 
-    if (!config.migrations[dmcsEnv]) {
+    if (!config[project].migrations[dmcsEnv]) {
       console.log(chalk.red(`No migrations found for ${dmcsEnv}`));
       process.exit(1);
     }
@@ -72,7 +72,7 @@ export const rollback = new Command("rollback")
       );
     }
 
-    const migrationFiles = await readMigrationFiles();
+    const migrationFiles = await readMigrationFiles(project);
 
     if (migrationFiles.length === 0) {
       logger.log("INFO", "No migrations to rollback");
@@ -112,9 +112,10 @@ export const rollback = new Command("rollback")
         await dmcsUpdateConfig({
           ...latestConfig,
           [project]: {
+            ...latestConfig[project],
             migrations: {
-              ...latestConfig.migrations,
-              [dmcsEnv as string]: latestConfig.migrations[
+              ...latestConfig[project].migrations,
+              [dmcsEnv as string]: latestConfig[project].migrations[
                 dmcsEnv as string
               ].filter((migration: string) => migration !== file),
             },

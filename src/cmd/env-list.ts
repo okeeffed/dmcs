@@ -1,12 +1,15 @@
 import { Command } from "@commander-js/extra-typings";
 import { dmcsReadConfig } from "@/util/fs";
 import { logger } from "@/util/logger";
+import { selectProject } from "@/util/prompts";
 
 export const envList = new Command("env-list")
   .description("List all environments in the configuration")
-  .action(async () => {
+  .option("-p, --project <name>", "Project name")
+  .action(async (options) => {
     const config = await dmcsReadConfig();
-    const existingEnvs = Object.keys(config.migrations);
+    const project = await selectProject(options, config);
+    const existingEnvs = Object.keys(config[project].migrations);
 
     if (existingEnvs.length === 0) {
       logger.warn("WARN", "No environments found");

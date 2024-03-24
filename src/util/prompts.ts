@@ -197,7 +197,7 @@ export async function selectEnv<T extends Record<string, any>>(
     }
   }
 
-  if (!config.migrations[dmcsEnv]) {
+  if (!config[project].migrations[dmcsEnv]) {
     logger.error("ERROR", `No migrations found for ${dmcsEnv}`);
     process.exit(1);
   }

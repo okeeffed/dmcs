@@ -9,8 +9,8 @@ export const readFilesFromDirDesc = async (dirPath: string) => {
   });
 };
 
-export const readMigrationFiles = async () => {
-  const migrationsDir = pathFromCwd(".dmcs/migrations");
+export const readMigrationFiles = async (project: string) => {
+  const migrationsDir = pathFromCwd(`.dmcs/${project}/migrations`);
   const files = await readFilesFromDirDesc(migrationsDir);
   return files.filter((file) => file.endsWith(".mjs"));
 };

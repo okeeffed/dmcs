@@ -44,7 +44,7 @@ export const init = new Command("init")
 
     // Create initial configuration file
     if (!existsSync(configFilePath)) {
-      await writeFile(configFilePath, getInitConfig(initEnv));
+      await writeFile(configFilePath, getInitConfig(projectName, initEnv));
     }
 
     // Create initial migration file

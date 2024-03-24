@@ -16,8 +16,9 @@ export const envAdd = new Command("env-add")
     await dmcsUpdateConfig({
       ...config,
       [project]: {
+        ...config[project],
         migrations: {
-          ...config.migrations,
+          ...config[project].migrations,
           [env]: [],
         },
       },

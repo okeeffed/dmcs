@@ -26,7 +26,7 @@ export const migrate = new Command("migrate")
       logger.log("INFO", `Migrating ${dmcsEnv} environment`);
     }
 
-    const migrationFiles = await readMigrationFiles();
+    const migrationFiles = await readMigrationFiles(project);
     const migrationFilesToApply = migrationFiles.filter(
       (file) => !config[project].migrations[dmcsEnv as string].includes(file)
     );
@@ -49,10 +49,13 @@ export const migrate = new Command("migrate")
         await dmcsUpdateConfig({
           ...latestConfig,
           [project]: {
+            ...latestConfig[project],
             migrations: {
-              ...latestConfig.migrations,
+              ...latestConfig[project].migrations,
               [dmcsEnv as string]:
-                latestConfig.migrations[dmcsEnv as string].concat(file),
+                latestConfig[project].migrations[dmcsEnv as string].concat(
+                  file
+                ),
             },
           },
         });

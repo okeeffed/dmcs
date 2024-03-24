@@ -1,7 +1,9 @@
-export const getInitConfig = (initEnv: string) => `{
-  "migrationsFolder": ".dmcs/migrations",
-	"migrations": {
-		"${initEnv}": []
+export const getInitConfig = (projectName: string, initEnv: string) => `{
+	"${projectName}": {
+		"migrationsFolder": ".dmcs/migrations",
+		"migrations": {
+			"${initEnv}": []
+		}
 	}
 }
 `;

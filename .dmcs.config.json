@@ -1,10 +1,15 @@
 {
-  "dynamo": {
-    "migrationsFolder": ".dmcs/migrations",
+  "ddb": {
+    "migrationsFolder": ".dmcs/codemods/migrations",
     "migrations": {
       "development": ["1711245114392_init.mjs"],
-      "stage": [],
-      "sandbox": []
+      "staging": []
+    }
+  },
+  "codemods": {
+    "migrationsFolder": ".dmcs/codemods/migrations",
+    "migrations": {
+      "development": []
     }
   }
 }
