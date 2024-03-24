@@ -1,6 +1,6 @@
 export const getInitConfig = (projectName: string, initEnv: string) => `{
 	"${projectName}": {
-		"migrationsFolder": ".dmcs/migrations",
+		"migrationsFolder": ".dmcs/${projectName}/migrations",
 		"migrations": {
 			"${initEnv}": []
 		}
@@ -8,22 +8,12 @@ export const getInitConfig = (projectName: string, initEnv: string) => `{
 }
 `;
 
-export const getInitMigration = (
-  fileName: string
-) => `import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-
-// Initialize DynamoDB client
-const client = new DynamoDBClient();
-const docClient = DynamoDBDocumentClient.from(client);
-
-export const up = () => {
-	// Your migration code here
-	console.log('TODO: ${fileName} up migration');
+export const getInitMigration = (fileName: string) => `
+export const up = async () => {
+	throw new Error('Up migrations are not implemented for ${fileName}');
 }
 
-export const down = () => {
-	// Your migration code here
-	console.log('TODO: ${fileName} down migration');
+export const down = async () => {
+	throw new Error('Down migrations are not implemented for ${fileName}');
 }
 `;

@@ -7,6 +7,7 @@ import {
   setInitialProjectName,
 } from "@/util/prompts";
 import { existsSync } from "node:fs";
+import { mkdir } from "node:fs/promises";
 
 export const projectAdd = new Command("project-add")
   .description("Add a new project to the configuration")
@@ -24,6 +25,10 @@ export const projectAdd = new Command("project-add")
     ) {
       logger.error("ERROR", "DMCS already initialised");
       process.exit(1);
+    }
+
+    if (!existsSync(`.dmcs/${project}`)) {
+      await mkdir(`.dmcs/${project}/migrations`, { recursive: true });
     }
 
     await dmcsUpdateConfig({

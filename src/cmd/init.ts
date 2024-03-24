@@ -31,13 +31,8 @@ export const init = new Command("init")
 
     const spinner = ora("Initialising DMCS...").start();
 
-    // Create initial migrations folder
-    if (!existsSync(".dmcs")) {
-      await mkdir(".dmcs");
-    }
-
-    if (!existsSync(`.dmcs/${projectName}`)) {
-      await mkdir(`.dmcs/${projectName}`);
+    if (!existsSync(`.dmcs/${projectName}/migrations`)) {
+      await mkdir(`.dmcs/${projectName}/migrations`, { recursive: true });
     }
 
     const migrationsFolderPath = pathFromCwd(`.dmcs/${projectName}/migrations`);
