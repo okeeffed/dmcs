@@ -12,6 +12,7 @@ import process from "node:process";
 import { logger } from "@/util/logger";
 import { selectProject } from "@/util/prompts";
 import { CONFIG_DEFAULT_PATH } from "@/util/constants";
+import { produce } from "immer";
 
 export const rollback = new Command("rollback")
   .description("Run migrations for an environment")
@@ -115,18 +116,17 @@ export const rollback = new Command("rollback")
         await migration.down();
 
         const latestConfig = await dmcsReadConfig(options.config);
-        await dmcsUpdateConfig(options.config, {
-          ...latestConfig,
-          [project]: {
-            ...latestConfig[project],
-            migrations: {
-              ...latestConfig[project].migrations,
-              [dmcsEnv as string]: latestConfig[project].migrations[
-                dmcsEnv as string
-              ].filter((migration: string) => migration !== file),
-            },
-          },
-        });
+        const updatedConfig = produce(
+          latestConfig,
+          (draft: typeof latestConfig) => {
+            draft[project].migrations[dmcsEnv as string] = draft[
+              project
+            ].migrations[dmcsEnv as string].filter(
+              (migration: string) => migration !== file
+            );
+          }
+        );
+        await dmcsUpdateConfig(options.config, updatedConfig);
         logger.log("REVERTED", file);
       }
     }

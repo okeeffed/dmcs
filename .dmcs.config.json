@@ -3,7 +3,10 @@
     "migrationsFolder": ".dmcs/codemods/migrations",
     "migrations": {
       "development": [
-        "1711245114392_init.mjs"
+        "1711245114392_init.mjs",
+        "1711255884317_add_modified_data_to_role.mjs",
+        "1711257841048_add_name_data_to_seeds.mjs",
+        "1712354309961_init_ts.ts"
       ],
       "staging": []
     }

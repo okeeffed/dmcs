@@ -9,6 +9,7 @@ import {
 import { existsSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { CONFIG_DEFAULT_PATH } from "@/util/constants";
+import { produce } from "immer";
 
 export const projectAdd = new Command("project-add")
   .description("Add a new project to the configuration")
@@ -37,15 +38,11 @@ export const projectAdd = new Command("project-add")
       await mkdir(`.dmcs/${project}/migrations`, { recursive: true });
     }
 
-    await dmcsUpdateConfig(options.config, {
-      ...config,
-      [project]: {
-        migrationsFolder: `.dmcs/${project}/migrations`,
-        migrations: {
-          [initialEnv]: [],
-        },
-      },
+    const updatedConfig = produce(config, (draft: typeof config) => {
+      draft[project].migrations[initialEnv] = [];
+      draft[project].migrationsFolder = `.dmcs/${project}/migrations`;
     });
+    await dmcsUpdateConfig(options.config, updatedConfig);
 
     logger.log(
       "INFO",

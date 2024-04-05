@@ -6,10 +6,148 @@ import {
   dmcsReadConfig,
 } from "@/util/fs";
 import process from "node:process";
+import vm from "node:vm";
+import esbuild from "esbuild";
+import { findUp } from "find-up";
 
 import { logger } from "@/util/logger";
 import { selectEnv, selectProject } from "@/util/prompts";
 import { CONFIG_DEFAULT_PATH } from "@/util/constants";
+import path from "node:path";
+import { produce } from "immer";
+
+type Sandbox = {
+  console: Console;
+  require: (moduleName: string) => any;
+  process: NodeJS.Process;
+  module: {
+    exports: {
+      up?: () => Promise<void>;
+      down?: () => Promise<void>;
+    };
+  };
+  __dirname: string;
+  __filename: string;
+};
+
+// Function to manually require modules from node_modules
+function requireModule(moduleName: string) {
+  return require(moduleName);
+}
+
+async function findTsConfigFile() {
+  const tsConfigFilePath = await findUp("tsconfig.json");
+
+  if (!tsConfigFilePath) {
+    throw new Error(
+      "Could not find a tsconfig.json file. Please update your project configuration to include one."
+    );
+  }
+
+  return tsConfigFilePath;
+}
+
+async function runTsFile({
+  project,
+  file,
+  options,
+  dmcsEnv,
+}: {
+  project: string;
+  file: string;
+  options: any;
+  dmcsEnv: string;
+}) {
+  let tsConfigFilePath = options.tsconfig;
+
+  if (!tsConfigFilePath) {
+    tsConfigFilePath = await findTsConfigFile();
+  }
+  const filePath = pathFromCwd(`.dmcs/${project}/migrations/${file}`);
+
+  // Compile TypeScript to JavaScript using ESBuild
+  // Perform the build and keep the output in-memory
+  const result = await esbuild.build({
+    entryPoints: [filePath],
+    bundle: true,
+    platform: "node",
+    format: "cjs",
+    tsconfig: tsConfigFilePath, // Adjust as needed
+    write: false, // Keep output in-memory
+  });
+
+  // Access the compiled code directly from the result object
+  // Assuming only one output file, which is typical for single entry point scenarios
+  const code = result.outputFiles[0].text;
+
+  // Define what we want to include in our sandboxed environment
+  const sandbox: Sandbox = {
+    console: console, // Make console available in the sandbox
+    require: requireModule, // Provide a custom require function
+    process: process, // Optionally make the process object available
+    module: { exports: {} }, // Mock module object if needed
+    __dirname: path.dirname(filePath), // Provide __dirname
+    __filename: filePath, // Provide __filename
+  };
+
+  const context = vm.createContext(sandbox);
+
+  const script = new vm.Script(code, {
+    filename: path.basename(filePath),
+  });
+
+  // Execute the script in the sandbox
+  script.runInContext(context);
+
+  // Now, you can call the 'up' function from the compiled code
+  if (typeof sandbox.module.exports.up === "function") {
+    await sandbox.module.exports.up();
+    const latestConfig = await dmcsReadConfig(options.config);
+    const updatedConfig = produce(
+      latestConfig,
+      (draft: typeof latestConfig) => {
+        draft[project].migrations[dmcsEnv as string].push(file);
+      }
+    );
+    await dmcsUpdateConfig(options.config, updatedConfig);
+  } else {
+    throw new Error("Migration file does not have an 'up' function");
+  }
+}
+
+async function runJsFile({
+  project,
+  file,
+  options,
+  dmcsEnv,
+}: {
+  project: string;
+  file: string;
+  options: any;
+  dmcsEnv: string;
+}) {
+  // Run JavaScript file
+  const migration = await import(
+    pathFromCwd(`.dmcs/${project}/migrations/${file}`)
+  );
+
+  if (typeof migration.up === "function") {
+    await migration.up();
+    const latestConfig = await dmcsReadConfig(options.config);
+
+    const updatedConfig = produce(
+      latestConfig,
+      (draft: typeof latestConfig) => {
+        draft[project].migrations[dmcsEnv as string].push(file);
+      }
+    );
+    await dmcsUpdateConfig(options.config, updatedConfig);
+
+    logger.log("APPLIED", file);
+  } else {
+    throw new Error("Migration file does not have an 'up' function");
+  }
+}
 
 export const migrate = new Command("migrate")
   .description("Run migrations for an environment")
@@ -43,30 +181,17 @@ export const migrate = new Command("migrate")
     }
 
     for (const file of migrationFilesToApply) {
-      const migration = await import(
-        pathFromCwd(`.dmcs/${project}/migrations/${file}`)
-      );
-
       if (options.dryRun) {
         logger.log("PENDING", file);
       } else {
-        await migration.up();
-        const latestConfig = await dmcsReadConfig(options.config);
-        await dmcsUpdateConfig(options.config, {
-          ...latestConfig,
-          [project]: {
-            ...latestConfig[project],
-            migrations: {
-              ...latestConfig[project].migrations,
-              [dmcsEnv as string]:
-                latestConfig[project].migrations[dmcsEnv as string].concat(
-                  file
-                ),
-            },
-          },
-        });
-        // Update
-        logger.log("APPLIED", file);
+        if (file.endsWith(".ts")) {
+          await runTsFile({ project, file, options, dmcsEnv });
+
+          // Update
+          logger.log("APPLIED", file);
+        } else if (file.endsWith(".mjs")) {
+          await runJsFile({ project, file, options, dmcsEnv });
+        }
       }
     }
 

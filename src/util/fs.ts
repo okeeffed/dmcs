@@ -1,5 +1,6 @@
 import { readdir, writeFile, readFile } from "node:fs/promises";
 import path from "node:path";
+import { produce } from "immer";
 
 // Read all files from a directory and return an array of file names in order of Date.now descending
 export const readFilesFromDirDesc = async (dirPath: string) => {
@@ -12,7 +13,7 @@ export const readFilesFromDirDesc = async (dirPath: string) => {
 export const readMigrationFiles = async (project: string) => {
   const migrationsDir = pathFromCwd(`.dmcs/${project}/migrations`);
   const files = await readFilesFromDirDesc(migrationsDir);
-  return files.filter((file) => file.endsWith(".mjs"));
+  return files.filter((file) => file.endsWith(".mjs") || file.endsWith(".ts"));
 };
 
 // Read DMCS configration file and parse JSON
@@ -23,6 +24,14 @@ export const dmcsReadConfig = async (configFilePath: string) => {
 };
 
 // Update the DMCS configuration file
+export const dmcsUpdateConfigOld = async (
+  configFilePath: string,
+  config: any
+) => {
+  const configPath = pathFromCwd(configFilePath);
+  await writeFile(configPath, JSON.stringify(config, null, 2));
+};
+
 export const dmcsUpdateConfig = async (configFilePath: string, config: any) => {
   const configPath = pathFromCwd(configFilePath);
   await writeFile(configPath, JSON.stringify(config, null, 2));

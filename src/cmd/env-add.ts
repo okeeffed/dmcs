@@ -4,6 +4,7 @@ import { dmcsUpdateConfig, dmcsReadConfig } from "@/util/fs";
 import { logger } from "@/util/logger";
 import { selectProject, setNewEnvName } from "@/util/prompts";
 import { CONFIG_DEFAULT_PATH } from "@/util/constants";
+import { produce } from "immer";
 
 export const envAdd = new Command("env-add")
   .description("Add a new environment to the configuration")
@@ -19,16 +20,10 @@ export const envAdd = new Command("env-add")
     const project = await selectProject(options, config);
     const env = await setNewEnvName(options, project, config);
 
-    await dmcsUpdateConfig(options.config, {
-      ...config,
-      [project]: {
-        ...config[project],
-        migrations: {
-          ...config[project].migrations,
-          [env]: [],
-        },
-      },
+    const updatedConfig = produce(config, (draft: typeof config) => {
+      draft[project].migrations[env] = [];
     });
+    await dmcsUpdateConfig(options.config, updatedConfig);
 
     logger.log("INFO", `Added environment ${env}`);
   });
