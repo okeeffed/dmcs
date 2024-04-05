@@ -1,6 +1,6 @@
+import { findUp } from "find-up";
 import { readdir, writeFile, readFile } from "node:fs/promises";
 import path from "node:path";
-import { produce } from "immer";
 
 // Read all files from a directory and return an array of file names in order of Date.now descending
 export const readFilesFromDirDesc = async (dirPath: string) => {
@@ -40,3 +40,20 @@ export const dmcsUpdateConfig = async (configFilePath: string, config: any) => {
 // Get the absolute path from the current working directory
 export const pathFromCwd = (filePath: string) =>
   path.join(process.cwd(), filePath);
+
+export async function findTsConfigFile() {
+  const tsConfigFilePath = await findUp("tsconfig.json");
+
+  if (!tsConfigFilePath) {
+    throw new Error(
+      "Could not find a tsconfig.json file. Please update your project configuration to include one."
+    );
+  }
+
+  return tsConfigFilePath;
+}
+
+// Function to manually require modules from node_modules
+export function requireModule(moduleName: string) {
+  return require(moduleName);
+}

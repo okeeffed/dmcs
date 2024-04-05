@@ -4,48 +4,19 @@ import {
   pathFromCwd,
   readMigrationFiles,
   dmcsReadConfig,
+  findTsConfigFile,
+  requireModule,
 } from "@/util/fs";
 import process from "node:process";
 import vm from "node:vm";
 import esbuild from "esbuild";
-import { findUp } from "find-up";
 
 import { logger } from "@/util/logger";
 import { selectEnv, selectProject } from "@/util/prompts";
 import { CONFIG_DEFAULT_PATH } from "@/util/constants";
 import path from "node:path";
 import { produce } from "immer";
-
-type Sandbox = {
-  console: Console;
-  require: (moduleName: string) => any;
-  process: NodeJS.Process;
-  module: {
-    exports: {
-      up?: () => Promise<void>;
-      down?: () => Promise<void>;
-    };
-  };
-  __dirname: string;
-  __filename: string;
-};
-
-// Function to manually require modules from node_modules
-function requireModule(moduleName: string) {
-  return require(moduleName);
-}
-
-async function findTsConfigFile() {
-  const tsConfigFilePath = await findUp("tsconfig.json");
-
-  if (!tsConfigFilePath) {
-    throw new Error(
-      "Could not find a tsconfig.json file. Please update your project configuration to include one."
-    );
-  }
-
-  return tsConfigFilePath;
-}
+import { Sandbox } from "@/util/types";
 
 async function runTsFile({
   project,
@@ -110,6 +81,7 @@ async function runTsFile({
       }
     );
     await dmcsUpdateConfig(options.config, updatedConfig);
+    logger.log("APPLIED", file);
   } else {
     throw new Error("Migration file does not have an 'up' function");
   }
@@ -142,7 +114,6 @@ async function runJsFile({
       }
     );
     await dmcsUpdateConfig(options.config, updatedConfig);
-
     logger.log("APPLIED", file);
   } else {
     throw new Error("Migration file does not have an 'up' function");
@@ -158,6 +129,10 @@ export const migrate = new Command("migrate")
     "-c, --config <path>",
     "Path to the configuration file",
     CONFIG_DEFAULT_PATH
+  )
+  .option(
+    "-t, --tsconfig <path>",
+    "Path to the tsconfig.json file used for compiling TypeScript migration files"
   )
   .action(async (options) => {
     const config = await dmcsReadConfig(options.config);
@@ -186,9 +161,6 @@ export const migrate = new Command("migrate")
       } else {
         if (file.endsWith(".ts")) {
           await runTsFile({ project, file, options, dmcsEnv });
-
-          // Update
-          logger.log("APPLIED", file);
         } else if (file.endsWith(".mjs")) {
           await runJsFile({ project, file, options, dmcsEnv });
         }
