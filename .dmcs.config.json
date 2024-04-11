@@ -15,7 +15,10 @@
   "codemods": {
     "migrationsFolder": ".dmcs/codemods/migrations",
     "migrations": {
-      "development": []
+      "development": [
+        "1711272410033_mod_fn_to_arrows.mjs",
+        "1712876216988_test_exec.ts"
+      ]
     }
   }
 }

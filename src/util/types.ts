@@ -1,4 +1,7 @@
+import { exec } from "node:child_process";
+
 export type Sandbox = {
+  exec: typeof exec;
   console: Console;
   require: (moduleName: string) => any;
   process: NodeJS.Process;

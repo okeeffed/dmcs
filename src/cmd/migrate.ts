@@ -10,6 +10,7 @@ import {
 import process from "node:process";
 import vm from "node:vm";
 import esbuild from "esbuild";
+import { exec } from "node:child_process";
 
 import { logger } from "@/util/logger";
 import { selectEnv, selectProject } from "@/util/prompts";
@@ -53,6 +54,7 @@ async function runTsFile({
 
   // Define what we want to include in our sandboxed environment
   const sandbox: Sandbox = {
+    exec,
     console: console, // Make console available in the sandbox
     require: requireModule, // Provide a custom require function
     process: process, // Optionally make the process object available
