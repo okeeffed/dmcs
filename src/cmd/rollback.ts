@@ -12,6 +12,7 @@ import {
 import process from "node:process";
 import vm from "node:vm";
 import esbuild from "esbuild";
+import { Module } from "node:module";
 
 import { logger } from "@/util/logger";
 import { selectProject } from "@/util/prompts";
@@ -19,6 +20,7 @@ import { CONFIG_DEFAULT_PATH } from "@/util/constants";
 import { produce } from "immer";
 import path from "node:path";
 import { Sandbox } from "@/util/types";
+import { nodeExternalsPlugin } from "@/plugins";
 
 async function runTsFile({
   project,
@@ -47,6 +49,8 @@ async function runTsFile({
     format: "cjs",
     tsconfig: tsConfigFilePath, // Adjust as needed
     write: false, // Keep output in-memory
+    external: ["*"], // Mark all packages as external initially
+    plugins: [nodeExternalsPlugin],
   });
 
   // Access the compiled code directly from the result object
@@ -55,12 +59,23 @@ async function runTsFile({
 
   // Define what we want to include in our sandboxed environment
   const sandbox: Sandbox = {
-    console: console, // Make console available in the sandbox
-    require: requireModule, // Provide a custom require function
-    process: process, // Optionally make the process object available
-    module: { exports: {} }, // Mock module object if needed
-    __dirname: path.dirname(filePath), // Provide __dirname
-    __filename: filePath, // Provide __filename
+    console: console,
+    process: process,
+    Buffer: Buffer,
+    setTimeout: setTimeout,
+    setInterval: setInterval,
+    clearTimeout: clearTimeout,
+    clearInterval: clearInterval,
+    __dirname: path.dirname(filePath),
+    __filename: filePath,
+    module: { exports: {} },
+    require: (id: string) => {
+      if (id.startsWith("./") || id.startsWith("../")) {
+        // Resolve relative paths
+        id = path.resolve(path.dirname(filePath), id);
+      }
+      return Module.createRequire(filePath)(id);
+    },
   };
 
   const context = vm.createContext(sandbox);

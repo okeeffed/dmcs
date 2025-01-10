@@ -2,15 +2,20 @@ import { exec } from "node:child_process";
 
 export type Sandbox = {
   exec: typeof exec;
-  console: Console;
-  require: (moduleName: string) => any;
-  process: NodeJS.Process;
+  console: typeof console;
+  process: typeof process;
+  Buffer: typeof Buffer;
+  setTimeout: typeof setTimeout;
+  setInterval: typeof setInterval;
+  clearTimeout: typeof clearTimeout;
+  clearInterval: typeof clearInterval;
+  __dirname: string;
+  __filename: string;
   module: {
     exports: {
       up?: () => Promise<void>;
       down?: () => Promise<void>;
     };
   };
-  __dirname: string;
-  __filename: string;
+  require: (id: string) => any;
 };

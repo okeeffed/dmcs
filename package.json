@@ -2,7 +2,7 @@
   "name": "@okeeffed/dmcs",
   "description": "A simple CLI tool to manage data migrations",
   "main": "dist/main.mjs",
-  "version": "0.0.13",
+  "version": "0.0.41",
   "author": "Dennis O'Keeffe",
   "license": "CC-BY-NC-4.0",
   "files": [
@@ -16,7 +16,6 @@
     }
   },
   "bin": {
-    "aws-ddb-migrations": "dist/main.mjs",
     "dmcs": "dist/main.mjs"
   },
   "scripts": {
